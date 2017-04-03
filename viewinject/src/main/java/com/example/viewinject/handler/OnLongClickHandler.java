@@ -1,6 +1,5 @@
 package com.example.viewinject.handler;
 
-import android.app.Activity;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -13,13 +12,13 @@ import java.util.Map;
  * Created by nayuta on 2017/4/3.
  */
 
-public class DynamicHandler implements InvocationHandler {
+public class OnLongClickHandler implements InvocationHandler {
 
     private final Map<String, Method> methodMap = new HashMap<>();
     //防止内存泄漏
     private WeakReference<Object> activityRef;
 
-    public DynamicHandler(Object activityRef) {
+    public OnLongClickHandler(Object activityRef) {
         this.activityRef = new WeakReference<Object>(activityRef);
     }
 
@@ -43,11 +42,12 @@ public class DynamicHandler implements InvocationHandler {
             if (method != null) {
                 //回调clickBtnInvoked方法
                 //java.lang.IllegalArgumentException: Wrong number of arguments; expected 0, g
-                return method.invoke(activity, objects);
+                Object object = method.invoke(activity, objects);
+                return object == null ? false : Boolean.valueOf(object.toString());
             } else {
                 Log.w("Handler", "please call #addMethod() Method...");
             }
         }
-        return null;
+        return false;
     }
 }

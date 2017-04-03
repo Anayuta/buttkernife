@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         tv_hello.setText("i come on!");
     }
 
-    @OnLongClick(R.id.btn_show_txt)
+    @OnLongClick(R.id.tv_hello)
     public void testLongClick(View view){
         tv_hello.setText("longClick...");
     }

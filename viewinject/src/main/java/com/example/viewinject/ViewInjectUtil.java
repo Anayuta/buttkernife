@@ -2,14 +2,14 @@ package com.example.viewinject;
 
 import android.app.Activity;
 import android.util.Log;
-import android.view.View;
 
 import com.example.viewinject.annotation.BindView;
 import com.example.viewinject.annotation.ContentView;
 import com.example.viewinject.annotation.EvensBase;
 import com.example.viewinject.annotation.OnClick;
 import com.example.viewinject.annotation.OnLongClick;
-import com.example.viewinject.handler.DynamicHandler;
+import com.example.viewinject.handler.OnClickHandler;
+import com.example.viewinject.handler.OnLongClickHandler;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -47,6 +47,7 @@ public class ViewInjectUtil {
         //得到activity的所有方法
         Method[] declaredMethods = a.getDeclaredMethods();
         for (Method method : declaredMethods) {
+            //判断该类有没有标记这个注解
             if (method.isAnnotationPresent(OnLongClick.class)) {
                 //判断下参数
                 Class<?>[] parameterTypes = method.getParameterTypes();
@@ -64,7 +65,7 @@ public class ViewInjectUtil {
                 String listenerSetter = evensBase.listenerSetter();
                 String methodName = evensBase.methodName();
                 //动态代理
-                DynamicHandler handler = new DynamicHandler(activity);
+                OnLongClickHandler handler = new OnLongClickHandler(activity);
                 //将OnLongClickListener给动态代理handler执行
                 Object listener = Proxy.newProxyInstance(listenerType.getClassLoader(), new Class<?>[]{listenerType}, handler);
                 handler.addMethod(methodName, method);//
@@ -120,7 +121,7 @@ public class ViewInjectUtil {
                 String listenerSetter = evensBase.listenerSetter();
                 String methodName = evensBase.methodName();
                 //动态代理
-                DynamicHandler handler = new DynamicHandler(activity);
+                OnClickHandler handler = new OnClickHandler(activity);
                 //将OnClickListener给动态代理handler执行
                 Object listener = Proxy.newProxyInstance(listenerType.getClassLoader(), new Class<?>[]{listenerType}, handler);
                 handler.addMethod(methodName, method);//
