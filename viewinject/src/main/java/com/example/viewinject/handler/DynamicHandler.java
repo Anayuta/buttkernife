@@ -28,7 +28,9 @@ public class DynamicHandler implements InvocationHandler {
      * @param method
      */
     public void addMethod(String name, Method method) {
-        this.methodMap.put(name, method);
+        if (!methodMap.containsKey(name)) {
+            this.methodMap.put(name, method);
+        }
     }
 
     @Override

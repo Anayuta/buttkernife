@@ -10,6 +10,7 @@ import com.example.viewinject.ViewInjectUtil;
 import com.example.viewinject.annotation.BindView;
 import com.example.viewinject.annotation.ContentView;
 import com.example.viewinject.annotation.OnClick;
+import com.example.viewinject.annotation.OnLongClick;
 
 @ContentView(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
@@ -26,7 +27,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.btn_show_txt)
-    public void showText(String view) {
+    public void showText(View view) {
         tv_hello.setText("i come on!");
+    }
+
+    @OnLongClick(R.id.btn_show_txt)
+    public void testLongClick(View view){
+        tv_hello.setText("longClick...");
     }
 }

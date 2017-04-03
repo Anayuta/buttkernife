@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@EvensBase(listenerType = View.OnLongClickListener.class, listenerSetter = "setOnLongClickListener", methodName = "OnLongClick")
+@EvensBase(listenerType = View.OnLongClickListener.class, listenerSetter = "setOnLongClickListener", methodName = "onLongClick")
 public @interface OnLongClick {
     int[] value();
 }

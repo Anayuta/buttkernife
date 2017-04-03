@@ -8,6 +8,7 @@ import com.example.viewinject.annotation.BindView;
 import com.example.viewinject.annotation.ContentView;
 import com.example.viewinject.annotation.EvensBase;
 import com.example.viewinject.annotation.OnClick;
+import com.example.viewinject.annotation.OnLongClick;
 import com.example.viewinject.handler.DynamicHandler;
 
 import java.lang.reflect.Field;
@@ -37,12 +38,59 @@ public class ViewInjectUtil {
     }
 
     /**
-     * 长按事件
+     * 长按事件,注意OnLongClick返回一个boolean
      *
      * @param activity
      */
     private static void injectLongClickEvents(Activity activity) {
+        Class<? extends Activity> a = activity.getClass();
+        //得到activity的所有方法
+        Method[] declaredMethods = a.getDeclaredMethods();
+        for (Method method : declaredMethods) {
+            if (method.isAnnotationPresent(OnLongClick.class)) {
+                //判断下参数
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                //作为click的方法接收一个参数View
+                if (parameterTypes.length != 1 || !parameterTypes[0].getName().equals("android.view.View")) {
+                    Log.e("ViewInjectUtil", "onClick Method parameterType must be View...");
+                    return;
+                }
+                OnLongClick annotation = method.getAnnotation(OnLongClick.class);
+                int[] viewIds = annotation.value();//得到注解的所有值
+                //获取EventsBase的注解
+                EvensBase evensBase = annotation.annotationType().getAnnotation(EvensBase.class);
+                //得到EventsBase的值
+                Class listenerType = evensBase.listenerType();
+                String listenerSetter = evensBase.listenerSetter();
+                String methodName = evensBase.methodName();
+                //动态代理
+                DynamicHandler handler = new DynamicHandler(activity);
+                //将OnLongClickListener给动态代理handler执行
+                Object listener = Proxy.newProxyInstance(listenerType.getClassLoader(), new Class<?>[]{listenerType}, handler);
+                handler.addMethod(methodName, method);//
+                //为每个view设置点击事件
+                for (int viewId : viewIds) {
+                    try {
+                        //findviewById操作
+                        Method viewMethod = a.getMethod(VIEW_METHOD, int.class);
+                        viewMethod.setAccessible(true);
+                        Object view = viewMethod.invoke(activity, viewId);//得到view的findviewById实例
+                        //得到该view的setterOnClick方法
+                        Method setterOnLongClickMethod = view.getClass().getMethod(listenerSetter, listenerType);
+                        setterOnLongClickMethod.setAccessible(true);
+                        //onLongClick返回一个boolean
+                        setterOnLongClickMethod.invoke(view, listener);
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
 
+                }
+            }
+        }
     }
 
     /**
