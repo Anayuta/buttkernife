@@ -1,6 +1,8 @@
 package com.example.viewinject;
 
 import android.app.Activity;
+import android.util.Log;
+import android.view.View;
 
 import com.example.viewinject.annotation.BindView;
 import com.example.viewinject.annotation.ContentView;
@@ -30,20 +32,37 @@ public class ViewInjectUtil {
     public static void bind(Activity activity) {
         injectLayout(activity);
         injectView(activity);
-        injectEvents(activity);
+        injectClickEvents(activity);
+        injectLongClickEvents(activity);
     }
 
     /**
-     * 事件注解
+     * 长按事件
      *
      * @param activity
      */
-    private static void injectEvents(Activity activity) {
+    private static void injectLongClickEvents(Activity activity) {
+
+    }
+
+    /**
+     * 单击事件注解
+     *
+     * @param activity
+     */
+    private static void injectClickEvents(Activity activity) {
         Class<? extends Activity> a = activity.getClass();
         //得到activity的所有方法
         Method[] declaredMethods = a.getDeclaredMethods();
         for (Method method : declaredMethods) {
             if (method.isAnnotationPresent(OnClick.class)) {
+                //判断下参数
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                //作为click的方法接收一个参数View
+                if (parameterTypes.length != 1 || !parameterTypes[0].getName().equals("android.view.View")) {
+                    Log.e("ViewInjectUtil", "onClick Method parameterType must be View...");
+                    return;
+                }
                 OnClick annotation = method.getAnnotation(OnClick.class);
                 int[] viewIds = annotation.value();//得到注解的所有值
                 //获取EventsBase的注解

@@ -40,6 +40,7 @@ public class DynamicHandler implements InvocationHandler {
             method = methodMap.get(methodName);
             if (method != null) {
                 //回调clickBtnInvoked方法
+                //java.lang.IllegalArgumentException: Wrong number of arguments; expected 0, g
                 return method.invoke(activity, objects);
             } else {
                 Log.w("Handler", "please call #addMethod() Method...");
