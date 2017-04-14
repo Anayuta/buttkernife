@@ -257,5 +257,37 @@ public class ViewInjectUtil {
             }
         }
     }
+    //用于在lib中butterknife无法完成注解使用
+//    private static void injectHeadView(Fragment fragment, View view) {
+//        Class<? extends Fragment> a = fragment.getClass();
+//        //获取activity的所有字段
+//        Field[] declaredFields = a.getDeclaredFields();
+//        //得到BindView的注解
+//        for (Field field : declaredFields) {
+//            if (field.isAnnotationPresent(BindHeadView.class)) {//如果该Field是Bindview的注解
+//                //得到字段注解
+//                BindHeadView annotation = field.getAnnotation(BindHeadView.class);
+//                //如果拿到的是R2则转换一下
+//                int viewId = annotation.value();
+//                if (String.valueOf(viewId).contains("R2")) {
+//                    viewId = Integer.valueOf(String.valueOf(viewId).replace("R2", "R"));//得到注解的值
+//                }
+//                if (viewId == 0) {
+//                    return;
+//                }
+//                for (Class<?> clazz = view.getClass(); clazz != View.class; clazz = clazz.getSuperclass()) {
+//                    try {
+//                        Method method = clazz.getDeclaredMethod(HEADVIEW_FINDVIEWBYID, int.class);
+//                        method.setAccessible(true);
+//                        Object resView = method.invoke(view, viewId);//反射调用该view上的方法
+//                        field.setAccessible(true);//设置该Field可访问
+//                        field.set(fragment, resView);//赋值
+//                    } catch (Exception e) {
+////                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 }
