@@ -2,7 +2,9 @@ package com.example.viewinject;
 
 import android.app.Activity;
 import android.util.Log;
+import android.view.View;
 
+import com.example.viewinject.annotation.BindHeadView;
 import com.example.viewinject.annotation.BindView;
 import com.example.viewinject.annotation.ContentView;
 import com.example.viewinject.annotation.EvensBase;
@@ -35,6 +37,47 @@ public class ViewInjectUtil {
         injectView(activity);
         injectClickEvents(activity);
         injectLongClickEvents(activity);
+    }
+
+
+    public static void bind(Activity activity, View view) {
+        injectHeadView(activity, view);
+    }
+
+    private static void injectHeadView(Activity activity, View view) {
+        Class<? extends Activity> a = activity.getClass();
+        //获取activity的所有字段
+        Field[] declaredFields = a.getDeclaredFields();
+        //得到BindView的注解
+        for (Field field : declaredFields) {
+            if (field.isAnnotationPresent(BindHeadView.class)) {//如果该Field是Bindview的注解
+                //得到字段注解
+                BindHeadView annotation = field.getAnnotation(BindHeadView.class);
+                int viewId = annotation.value();//得到注解的值
+                if (viewId == 0) {
+                    return;
+                }
+//                try {
+                for (Class<?> clazz = view.getClass(); clazz != View.class; clazz = clazz.getSuperclass()) {
+                    try {
+                        Method method = clazz.getDeclaredMethod("findViewTraversal", int.class);
+                        method.setAccessible(true);
+                        Object resView = method.invoke(view, viewId);
+                        field.setAccessible(true);//设置该Field可访问
+                        field.set(activity, resView);//赋值
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+//                } catch (NoSuchMethodException e) {
+//                    e.printStackTrace();
+//                } catch (InvocationTargetException e) {
+//                    e.printStackTrace();
+//                } catch (IllegalAccessException e) {
+//                    e.printStackTrace();
+//                }
+            }
+        }
     }
 
     /**
